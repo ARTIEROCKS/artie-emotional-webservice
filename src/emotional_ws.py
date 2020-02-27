@@ -3,7 +3,7 @@ from service import EmotionalService
 from dto import SecuritySensorData
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+#app.config["DEBUG"] = True
 
 #Creating the emotional service
 emotionalService = EmotionalService()
