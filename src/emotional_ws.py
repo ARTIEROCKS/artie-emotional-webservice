@@ -30,4 +30,4 @@ def get_data(data):
     return json_data
 
 
-app.run()
+app.run(host='0.0.0.0', port=5000)
