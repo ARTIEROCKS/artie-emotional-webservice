@@ -1,6 +1,7 @@
 import pika
 import os
 import json
+from datetime import datetime
 from repository.db import Database
 
 # Function to transform a txt json to an object
@@ -46,9 +47,16 @@ def callback(ch, method, properties, body, channel, db, client):
 
     # TODO: Make the prediction here
     print("Doing the prediction....")
+    prediction = "NONE"
+    date_format = "%d/%m/%Y, %H:%M:%S %Z"
 
-    # Inserts the data in the database
+    # Inserts the data in the database with the prediction
     data = load_json_data(body)
+    data['emotionalState'] = prediction
+    data['date'] = datetime.strptime(data['date'], date_format)
+    data['fromDate'] = datetime.strptime(data['fromDate'], date_format)
+    data['toDate'] = datetime.strptime(data['toDate'], date_format)
+
     result, client = db.insert(data, client)
 
     # Remove the message from the queue
