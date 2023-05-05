@@ -2,16 +2,17 @@ import pika
 import os
 import json
 from datetime import datetime
-from repository.db import Database
+from service.sensor_data_service import SensorDataService
+
 
 # Function to transform a txt json to an object
 def load_json_data(txt_json_data):
     data = json.loads(txt_json_data)
     return data
 
+
 # Function to consume the queue
 def start_consuming():
-
     # Getting the connection data from the environment variables
     rabbitmq_host = os.getenv('APP_RABBITMQ_HOST', 'localhost')
     rabbitmq_port = os.getenv('APP_RABBITMQ_PORT', 5672)
@@ -30,12 +31,13 @@ def start_consuming():
     # Creation of the queue if it doesn't exist
     channel.queue_declare(queue=rabbitmq_queue, durable=True)
 
-    # MongoDB database connection
-    db = Database()
-    client = None
+    # Sensor data service
+    sensor_data_service = SensorDataService()
 
     # Subscription to the queue
-    channel.basic_consume(queue=rabbitmq_queue, on_message_callback=lambda ch, method, properties, body: callback(ch, method, properties, body, channel, db, client))
+    channel.basic_consume(queue=rabbitmq_queue,
+                          on_message_callback=lambda ch, method, properties, body: callback(ch, method, properties,
+                                                                                            body, sensor_data_service))
 
     # Waiting for new messages
     print('Waiting for new messages...')
@@ -43,8 +45,7 @@ def start_consuming():
 
 
 # Function to process the message queue
-def callback(ch, method, properties, body, channel, db, client):
-
+def callback(ch, method, properties, body, sensor_data_service):
     # TODO: Make the prediction here
     print("Doing the prediction....")
     prediction = "NONE"
@@ -53,11 +54,15 @@ def callback(ch, method, properties, body, channel, db, client):
     # Inserts the data in the database with the prediction
     data = load_json_data(body)
     data['emotionalState'] = prediction
-    data['date'] = datetime.strptime(data['date'], date_format)
-    data['fromDate'] = datetime.strptime(data['fromDate'], date_format)
-    data['toDate'] = datetime.strptime(data['toDate'], date_format)
+    if not data['date'] is None:
+        data['date'] = datetime.strptime(data['date'], date_format)
+    if not data['fromDate'] is None:
+        data['fromDate'] = datetime.strptime(data['fromDate'], date_format)
+    if not data['toDate'] is None:
+        data['toDate'] = datetime.strptime(data['toDate'], date_format)
 
-    result, client = db.insert(data, client)
+    sensor_data_service.insert(data)
 
     # Remove the message from the queue
-    channel.basic_ack(delivery_tag=method.delivery_tag)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
