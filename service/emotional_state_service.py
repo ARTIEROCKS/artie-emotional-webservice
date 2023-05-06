@@ -12,7 +12,7 @@ class EmotionalStateService:
         emotional_state_query = {"externalId": data["externalId"]}
         document, self.client = self.db.search(emotional_state_query, self.client)
 
-        if document is None:
+        if document is not None:
             new_value = {"emotionalState": emotional_state}
             result, self.client = self.db.update(emotional_state_query, new_value, self.client)
         else:

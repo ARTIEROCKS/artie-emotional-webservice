@@ -14,7 +14,7 @@ def db_client():
 
 
 class Database:
-    def __init(self, db_collection):
+    def __init__(self, db_collection):
         self.db = "artie"
         self.db_collection = db_collection
 
