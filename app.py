@@ -13,10 +13,7 @@ def predict_emotional_model():
     external_id = request.args.get('externalId')
     sensor_data_service = SensorDataService()
     document = sensor_data_service.find_by_external_id(external_id)
-
-    # TODO: process external_id and predict emotional model
-    response = {'emotionalStatus': document['emotionalStatus']}
-    return jsonify(response)
+    return jsonify(document)
 
 
 if __name__ == "__main__":
