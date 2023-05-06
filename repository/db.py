@@ -14,9 +14,9 @@ def db_client():
 
 
 class Database:
-    # General variables
-    db = "artie"
-    db_collection = "SensorData"
+    def __init(self, db_collection):
+        self.db = "artie"
+        self.db_collection = db_collection
 
     # Function to insert a document into the collection
     def insert(self, data, client=None):

@@ -4,7 +4,7 @@ from repository.db import Database
 
 class SensorDataService:
     # MongoDB database connection
-    db = Database()
+    db = Database("SensorData")
     client = None
 
     # Function to insert the sensor data in the database

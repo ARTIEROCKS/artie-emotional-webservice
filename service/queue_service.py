@@ -3,6 +3,7 @@ import os
 import json
 from datetime import datetime
 from service.sensor_data_service import SensorDataService
+from service.emotional_state_service import EmotionalStateService
 
 
 # Function to transform a txt json to an object
@@ -34,10 +35,14 @@ def start_consuming():
     # Sensor data service
     sensor_data_service = SensorDataService()
 
+    # Emotional state service
+    emotional_state_service = EmotionalStateService()
+
     # Subscription to the queue
     channel.basic_consume(queue=rabbitmq_queue,
                           on_message_callback=lambda ch, method, properties, body: callback(ch, method, properties,
-                                                                                            body, sensor_data_service))
+                                                                                            body, sensor_data_service,
+                                                                                            emotional_state_service))
 
     # Waiting for new messages
     print('Waiting for new messages...')
@@ -45,7 +50,7 @@ def start_consuming():
 
 
 # Function to process the message queue
-def callback(ch, method, properties, body, sensor_data_service):
+def callback(ch, method, properties, body, sensor_data_service, emotional_state_service):
     # TODO: Make the prediction here
     print("Doing the prediction....")
     prediction = "NONE"
@@ -53,7 +58,8 @@ def callback(ch, method, properties, body, sensor_data_service):
 
     # Inserts the data in the database with the prediction
     data = load_json_data(body)
-    data['emotionalState'] = prediction
+    emotional_state_service.insert_or_update(data, prediction)
+
     if not data['date'] is None:
         data['date'] = datetime.strptime(data['date'], date_format)
     if not data['fromDate'] is None:
@@ -65,4 +71,3 @@ def callback(ch, method, properties, body, sensor_data_service):
 
     # Remove the message from the queue
     ch.basic_ack(delivery_tag=method.delivery_tag)
-
