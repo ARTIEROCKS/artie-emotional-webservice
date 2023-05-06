@@ -19,11 +19,11 @@ class EmotionalStateService:
             new_document = {"externalId": data["externalId"], "emotionalState": emotional_state}
             result, self.client = self.db.insert(new_document, self.client)
 
-        return result, self.client
+        return result
 
     # Function to find the sensor data in base of the external id
     def find_by_external_id(self, external_id):
         # Creates the query to get the external id
         sensor_data_query = {"externalId": external_id}
         document, self.client = self.db.search(sensor_data_query, self.client)
-        return document, self.client
+        return document
