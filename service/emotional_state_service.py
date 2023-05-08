@@ -26,4 +26,10 @@ class EmotionalStateService:
         # Creates the query to get the external id
         sensor_data_query = {"externalId": external_id}
         document, self.client = self.db.search(sensor_data_query, self.client)
+
+        if document is None:
+            document = {"externalId": external_id, "emotionalState": None}
+        else:
+            document["_id"] = str(document["_id"])
+
         return document
