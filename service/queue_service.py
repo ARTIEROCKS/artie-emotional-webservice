@@ -30,7 +30,7 @@ def start_consuming():
     channel = connection.channel()
 
     # Creation of the queue if it doesn't exist
-    channel.queue_declare(queue=rabbitmq_queue, durable=True)
+    channel.queue_declare(queue=rabbitmq_queue, durable=True, auto_delete=False)
 
     # Sensor data service
     sensor_data_service = SensorDataService()
