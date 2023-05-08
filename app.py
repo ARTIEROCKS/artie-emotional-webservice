@@ -3,6 +3,7 @@ from flask_cors import CORS
 from service import queue_service
 from service.emotional_state_service import EmotionalStateService
 from threading import Thread
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -20,7 +21,11 @@ def predict_emotional_model():
     return jsonify(document)
 
 
+
 if __name__ == "__main__":
+
+    # We get the environment
     t = Thread(target=queue_service.start_consuming)
     t.start()
     run_flask_app()
+

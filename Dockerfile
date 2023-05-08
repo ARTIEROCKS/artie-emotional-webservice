@@ -1,13 +1,14 @@
-FROM python:3.9-slim-buster
+FROM python:3.9.7-slim-buster
 
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 ADD model model
 ADD service service
 ADD repository repository
+ADD config config
 COPY app.py app.py
 
 EXPOSE 5000
