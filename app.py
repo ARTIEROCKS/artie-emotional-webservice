@@ -3,7 +3,7 @@ from flask_cors import CORS
 from service import queue_service
 from service.emotional_state_service import EmotionalStateService
 from threading import Thread
-import os
+import logging
 
 app = Flask(__name__)
 CORS(app)
@@ -13,10 +13,12 @@ def run_flask_app():
 
 @app.route('/api/v1/emotional-model/predict', methods=['GET'])
 def predict_emotional_model():
-
     external_id = request.args.get('externalId')
+    logging.info("Request to predict the emotional model for external id: " + external_id)
+
     emotional_state_service = EmotionalStateService()
     document = emotional_state_service.find_by_external_id(external_id)
+    logging.info("Found the document: " + document)
 
     return jsonify(document)
 
