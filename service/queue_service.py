@@ -5,6 +5,8 @@ import logging
 from datetime import datetime
 from service.sensor_data_service import SensorDataService
 from service.emotional_state_service import EmotionalStateService
+from service.video_service import transform_video_to_images, normalize_images
+from keras.models import load_model
 
 
 # Function to transform a txt json to an object
@@ -46,11 +48,15 @@ def start_consuming():
     logging.info("Instantiate the emotional state service")
     emotional_state_service = EmotionalStateService()
 
+    # Loading keras model
+    model = load_model("model/fer.h5")
+
     # Subscription to the queue
     channel.basic_consume(queue=rabbitmq_queue,
                           on_message_callback=lambda ch, method, properties, body: callback(ch, method, properties,
                                                                                             body, sensor_data_service,
-                                                                                            emotional_state_service))
+                                                                                            emotional_state_service,
+                                                                                            model))
 
     # Waiting for new messages
     logging.info("Waiting for new messages...")
@@ -59,17 +65,23 @@ def start_consuming():
 
 
 # Function to process the message queue
-def callback(ch, method, properties, body, sensor_data_service, emotional_state_service):
-    # TODO: Make the prediction here
-    logging.info("Performing the prediction...")
-    print("Doing the prediction....")
-    prediction = "NONE"
+def callback(ch, method, properties, body, sensor_data_service, emotional_state_service, model):
+
     date_format = "%d/%m/%Y, %H:%M:%S %Z"
 
-    # Inserts the data in the database with the prediction
+    # Getting the video from json, transforming into frames and normalizing
     data = load_json_data(body)
-    emotional_state_service.insert_or_update(data, prediction)
-    logging.info("Emotional State: " + prediction)
+    video = data['data'][1:-1]
+    frames = transform_video_to_images(video)
+    normalized_frames = normalize_images(frames)
+
+    logging.info("Performing the prediction...")
+    predictions = model.predict_classes(normalized_frames)
+    prediction_class = emotional_state_service.get_emotional_state_from_list(predictions)
+
+    # Inserts the data in the database with the prediction
+    emotional_state_service.insert_or_update(data, prediction_class)
+    logging.info("Emotional State: " + prediction_class)
 
     if not data['date'] is None:
         data['date'] = datetime.strptime(data['date'], date_format)
