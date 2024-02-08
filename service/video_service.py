@@ -1,36 +1,52 @@
 from base64 import b64decode
 import cv2
+import tempfile
 import logging
 from tqdm import tqdm
 import numpy as np
+import os
 
 
 # Function to transform a video into frames
 def transform_video_to_images(data):
 
     logging.info("Getting frames from video file")
-    images = []
+    frames = []
     if data != 'data:':
         try:
             header, encoded = data.split(",", 1)
-            video = b64decode(encoded)
+            video_data = b64decode(encoded)
+
+            # Create a temporary file to store the video
+            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
+                temp_file.write(video_data)
+                temp_file_path = temp_file.name
 
             # Convert the video to frames
-            cap = cv2.VideoCapture(video)
-            while True:
-                ret, frame = cap.read()
+            cap = cv2.VideoCapture(temp_file_path)
 
-                if not ret:
-                    break
+            # Checks if the video has been correctly opened
+            if not cap.isOpened():
+                logging.error(f"Error opening the file video")
+            else:
+                # Transforms the video into a frame sequence
+                while True:
+                    ret, frame = cap.read()
+                    if not ret:
+                        break
+                    frames.append(frame)
 
-                images.append(frame)
+                # Release the video capturer
+                cap.release()
 
-            cap.release()
+                # Deletes the temporary file
+                temp_file.close()
+                os.unlink(temp_file_path)
 
         except Exception as e:
             logging.error(f"Error during video processing: {str(e)}")
 
-    return images
+    return frames
 
 
 # Function to normalize images to 48x48 gray scale
