@@ -80,7 +80,7 @@ def callback(ch, method, properties, body, sensor_data_service, emotional_state_
     prediction_class = emotional_state_service.get_emotional_state_from_list(predictions)
 
     # Inserts the data in the database with the prediction
-    emotional_state_service.insert_or_update(data, prediction_class)
+    emotional_state_service.insert_or_update(data, prediction_class, predictions)
     logging.info("Emotional State: " + prediction_class)
 
     if not data['date'] is None:

@@ -1,6 +1,7 @@
 from repository.db import Database
 from collections import Counter
 import logging
+import numpy as np
 
 
 class EmotionalStateService:
@@ -32,19 +33,19 @@ class EmotionalStateService:
         7: "SURPRISE"
     }
 
-    # Function to insert the emotional state data in the database
-    def insert_or_update(self, data, emotional_state):
+    # Function to insert the emotional state data in the database and the predicted classes
+    def insert_or_update(self, data, emotional_state, predictions):
         # We create or update the emotional state
         emotional_state_query = {"externalId": data["externalId"]}
         document, self.client = self.db.search(emotional_state_query, self.client)
 
         if document is not None:
-            new_value = {"emotionalState": emotional_state}
+            new_value = {"emotionalState": emotional_state, "predictions": predictions}
             result, self.client = self.db.update(emotional_state_query, new_value, self.client)
             logging.debug(
                 "Updates emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
         else:
-            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state}
+            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state, "predictions": predictions}
             result, self.client = self.db.insert(new_document, self.client)
             logging.debug(
                 "Inserts emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
@@ -72,9 +73,12 @@ class EmotionalStateService:
     # Function to get the emotional state of a student from a list of emotional states
     def get_emotional_state_from_list(self, emotional_state_list):
 
+        # Getting the column index with the maximum value for each row
+        max_indexes = np.argmax(emotional_state_list, axis=1)
+
         # We count the emotional state repetitions in the list and order them from the most common to the less
-        counter = Counter(emotional_state_list)
-        sorted_emotional_states = sorted(set(emotional_state_list), key=lambda x: self.custom_sort(x, counter))
+        counter = Counter(max_indexes)
+        sorted_emotional_states = sorted(set(max_indexes), key=lambda x: self.custom_sort(x, counter))
 
         # Find the most common emotional state
         most_common_emotional_state = sorted_emotional_states[0]
