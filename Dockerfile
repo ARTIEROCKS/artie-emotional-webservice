@@ -1,14 +1,16 @@
-FROM python:3.7-slim-stretch
-
-# We copy just the requirements.txt first to leverage Docker cache
-COPY ./requirements.txt /app/requirements.txt
+FROM python:3.9.7-slim-buster
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+COPY requirements.txt requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY . /app
+ADD model model
+ADD service service
+ADD repository repository
+ADD config config
+COPY app.py app.py
 
-ENTRYPOINT [ "python" ]
+EXPOSE 5000
 
-CMD [ "src/emotional_ws.py" ]
+CMD [ "python3", "app.py", "--host=0.0.0.0", "--port=5000"]

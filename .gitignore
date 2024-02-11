@@ -2,3 +2,7 @@ src/__pycache__
 src/dto/__pycache__
 src/interface/__pycache__
 src/service/__pycache__
+service/__pycache__
+repository/__pycache__
+__pycache__
+qodana.yaml
