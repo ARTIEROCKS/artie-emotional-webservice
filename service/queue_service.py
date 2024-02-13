@@ -6,7 +6,7 @@ from datetime import datetime
 from service.sensor_data_service import SensorDataService
 from service.emotional_state_service import EmotionalStateService
 from service.video_service import transform_video_to_images, normalize_images
-from keras.models import load_model
+import tensorflow as tf
 
 
 # Function to transform a txt json to an object
@@ -49,7 +49,7 @@ def start_consuming():
     emotional_state_service = EmotionalStateService()
 
     # Loading keras model
-    model = load_model("model/fer.h5")
+    model = tf.keras.saving.load_model("model/fer.h5")
 
     # Subscription to the queue
     channel.basic_consume(queue=rabbitmq_queue,
