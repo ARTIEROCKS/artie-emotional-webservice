@@ -21,8 +21,6 @@ idna==3.2
 importlib-metadata==7.0.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
-keras==2.15.0
-keras-nightly==2.5.0.dev2021032900
 Keras-Preprocessing==1.1.2
 legacy==0.1.7
 libclang==16.0.6

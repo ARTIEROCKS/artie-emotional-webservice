@@ -76,7 +76,7 @@ def callback(ch, method, properties, body, sensor_data_service, emotional_state_
     normalized_frames = normalize_images(frames)
 
     logging.info("Performing the prediction...")
-    predictions = model.predict_classes(normalized_frames)
+    predictions = model.predict(normalized_frames)
     prediction_class = emotional_state_service.get_emotional_state_from_list(predictions)
 
     # Inserts the data in the database with the prediction
