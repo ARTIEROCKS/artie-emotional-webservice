@@ -45,7 +45,8 @@ class EmotionalStateService:
             logging.debug(
                 "Updates emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
         else:
-            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state, "predictions": predictions}
+            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state,
+                            "predictions": predictions.tolist()}
             result, self.client = self.db.insert(new_document, self.client)
             logging.debug(
                 "Inserts emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)

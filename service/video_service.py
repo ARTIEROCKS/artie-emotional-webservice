@@ -15,6 +15,11 @@ def transform_video_to_images(data):
     if data != 'data:':
         try:
             header, encoded = data.split(",", 1)
+
+            # If encoded video is empty, we return 0 length frames
+            if encoded is None or encoded == '':
+                return frames
+
             video_data = b64decode(encoded)
 
             # Create a temporary file to store the video
