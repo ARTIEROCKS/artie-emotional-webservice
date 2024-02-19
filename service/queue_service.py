@@ -94,7 +94,7 @@ def callback(ch, method, properties, body, sensor_data_service, emotional_state_
             data['toDate'] = datetime.strptime(data['toDate'], date_format)
 
         sensor_data_service.insert(data)
-        logging.info("Inserts the data in db: " + data)
+        logging.info("Inserts the data in db")
 
     else:
         logging.info("The message has no frames in its body")
