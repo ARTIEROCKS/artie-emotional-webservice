@@ -73,25 +73,31 @@ def callback(ch, method, properties, body, sensor_data_service, emotional_state_
     data = load_json_data(body)
     video = data['data'][1:-1]
     frames = transform_video_to_images(video)
-    normalized_frames = normalize_images(frames)
 
-    logging.info("Performing the prediction...")
-    predictions = model.predict_classes(normalized_frames)
-    prediction_class = emotional_state_service.get_emotional_state_from_list(predictions)
+    # If the frames are not empty
+    if frames:
+        normalized_frames = normalize_images(frames)
 
-    # Inserts the data in the database with the prediction
-    emotional_state_service.insert_or_update(data, prediction_class, predictions)
-    logging.info("Emotional State: " + prediction_class)
+        logging.info("Performing the prediction...")
+        predictions = model.predict(normalized_frames)
+        prediction_class = emotional_state_service.get_emotional_state_from_list(predictions)
 
-    if not data['date'] is None:
-        data['date'] = datetime.strptime(data['date'], date_format)
-    if not data['fromDate'] is None:
-        data['fromDate'] = datetime.strptime(data['fromDate'], date_format)
-    if not data['toDate'] is None:
-        data['toDate'] = datetime.strptime(data['toDate'], date_format)
+        # Inserts the data in the database with the prediction
+        emotional_state_service.insert_or_update(data, prediction_class, predictions)
+        logging.info("Emotional State: " + prediction_class)
 
-    sensor_data_service.insert(data)
-    logging.info("Inserts the data in db: " + data)
+        if not data['date'] is None:
+            data['date'] = datetime.strptime(data['date'], date_format)
+        if not data['fromDate'] is None:
+            data['fromDate'] = datetime.strptime(data['fromDate'], date_format)
+        if not data['toDate'] is None:
+            data['toDate'] = datetime.strptime(data['toDate'], date_format)
+
+        sensor_data_service.insert(data)
+        logging.info("Inserts the data in db")
+
+    else:
+        logging.info("The message has no frames in its body")
 
     # Remove the message from the queue
     ch.basic_ack(delivery_tag=method.delivery_tag)

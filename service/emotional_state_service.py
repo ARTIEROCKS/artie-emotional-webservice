@@ -2,6 +2,7 @@ from repository.db import Database
 from collections import Counter
 import logging
 import numpy as np
+from datetime import datetime
 
 
 class EmotionalStateService:
@@ -40,12 +41,14 @@ class EmotionalStateService:
         document, self.client = self.db.search(emotional_state_query, self.client)
 
         if document is not None:
-            new_value = {"emotionalState": emotional_state, "predictions": predictions}
+            new_value = {"emotionalState": emotional_state, "predictions": predictions.tolist(),
+                         "lastUpdate": datetime.utcnow()}
             result, self.client = self.db.update(emotional_state_query, new_value, self.client)
             logging.debug(
                 "Updates emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
         else:
-            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state, "predictions": predictions}
+            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state,
+                            "predictions": predictions.tolist(), "lastUpdate": datetime.utcnow()}
             result, self.client = self.db.insert(new_document, self.client)
             logging.debug(
                 "Inserts emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
