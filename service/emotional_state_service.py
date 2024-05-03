@@ -39,16 +39,41 @@ class EmotionalStateService:
         # We create or update the emotional state
         emotional_state_query = {"externalId": data["externalId"]}
         document, self.client = self.db.search(emotional_state_query, self.client)
+        current_time = datetime.utcnow()
+
+        # New predicted state to be added to the history
+        history_entry = {
+            "emotionalState": emotional_state,
+            "predictions": predictions.tolist(),
+            "timestamp": current_time
+        }
 
         if document is not None:
-            new_value = {"emotionalState": emotional_state, "predictions": predictions.tolist(),
-                         "lastUpdate": datetime.utcnow()}
+
+            # Add the new state to the history. Preserving existing history if it exists
+            emotional_state_history = document.get("emotionalStateHistory", [])
+            emotional_state_history.append(history_entry)
+
+            # Update the document with the new values
+            new_value = {
+                "emotionalState": emotional_state,  # Latest/emotional state
+                "predictions": predictions.tolist(),  # Latest predictions
+                "emotionalStateHistory": emotional_state_history,  # History of all states and predictions
+                "lastUpdate": current_time  # Time of the last update
+            }
             result, self.client = self.db.update(emotional_state_query, new_value, self.client)
             logging.debug(
                 "Updates emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
         else:
-            new_document = {"externalId": data["externalId"], "emotionalState": emotional_state,
-                            "predictions": predictions.tolist(), "lastUpdate": datetime.utcnow()}
+            # Create a new document with the initial values, including the history array
+            new_document = {
+                "externalId": data["externalId"],
+                "emotionalState": emotional_state,
+                "predictions": predictions.tolist(),
+                "emotionalStateHistory": [history_entry],  # Initialize history with the first entry
+                "lastUpdate": current_time
+            }
+
             result, self.client = self.db.insert(new_document, self.client)
             logging.debug(
                 "Inserts emotional state external id: " + data["externalId"] + " - emotional state: " + emotional_state)
