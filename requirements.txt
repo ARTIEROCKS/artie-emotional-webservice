@@ -65,3 +65,4 @@ urllib3==1.26.6
 Werkzeug==3.0.1
 wrapt==1.12.1
 zipp==3.17.0
+ffmpeg-python==0.2.0
