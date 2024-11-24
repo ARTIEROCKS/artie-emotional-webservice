@@ -75,7 +75,7 @@ def callback(ch, method, properties, body, sensor_data_service, emotional_state_
     frames = transform_video_to_images(video)
 
     # If the frames are not empty
-    if frames is not None and frames.size > 0:
+    if frames is not None and len(frames) > 0:
         normalized_frames = normalize_images(frames)
 
         logging.info("Performing the prediction...")
