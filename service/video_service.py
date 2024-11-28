@@ -57,6 +57,8 @@ def transform_video_to_images(data):
 
                 frames = np.frombuffer(out, np.uint8).reshape([-1, height, width, 3])
 
+            except ffmpeg.Error as e:
+                logging.error(f"ffprobe error: {e.stderr.decode()}")
             except Exception as e:
                 logging.error(f"Error processing video: {e}")
             finally:
