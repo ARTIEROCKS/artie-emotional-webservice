@@ -20,7 +20,7 @@ def predict_emotional_model():
 
     emotional_state_service = EmotionalStateService()
     document = emotional_state_service.find_by_external_id(external_id)
-    logging.info("Found the document: " + document)
+    logging.info("Found the document for external Id:" + external_id)
 
     return jsonify(document)
 
