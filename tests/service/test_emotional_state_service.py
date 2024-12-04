@@ -2,6 +2,7 @@ import unittest
 from service.emotional_state_service import EmotionalStateService
 from service.video_service import transform_video_to_images, normalize_images
 import base64
+import json
 from keras.models import load_model
 
 
@@ -10,6 +11,28 @@ class TestEmotionalStateService(unittest.TestCase):
     def setUp(self):
         # Initialize any objects or variables needed for testing
         self.service = EmotionalStateService()
+
+    def test_get_emotional_state_from_list_json(self):
+        # Path to the JSON file
+        json_path = "tests/json/artie.EmotionalStates_1.json"
+        # Expected output
+        expected_output = "SURPRISE"  # Change this based on the expected service output
+
+        # Load the JSON
+        with open(json_path, "r") as file:
+            data = json.load(file)
+
+        # Extract predictions
+        predictions = [item["predictions"] for item in data]
+
+        # Flatten the predictions list if needed
+        flattened_predictions = [pred for sublist in predictions for pred in sublist]
+
+        # Call the service method
+        prediction_class = self.service.get_emotional_state_from_list(flattened_predictions)
+
+        # Verify the result
+        self.assertEqual(prediction_class, expected_output)
 
     def test_get_emotional_state_from_list(self):
         # Path to the test video
