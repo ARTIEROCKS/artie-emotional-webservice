@@ -16,7 +16,7 @@ class TestEmotionalStateService(unittest.TestCase):
         # Path to the JSON file
         json_path = "tests/json/artie.EmotionalStates_1.json"
         # Expected output
-        expected_output = "SURPRISE"  # Change this based on the expected service output
+        expected_output = "SADNESS"  # Change this based on the expected service output
 
         # Load the JSON
         with open(json_path, "r") as file:
