@@ -96,7 +96,8 @@ class EmotionalStateService:
 
     # Define custom_sort function with counter as a default argument
     def custom_sort(self, number, counter):
-        return -counter[number], self.emotional_states_importance[number]
+        #return -counter[number], self.emotional_states_importance[number]
+        return -counter[number]
 
     # Function to get the emotional state of a student from a list of emotional states
     def get_emotional_state_from_list(self, emotional_state_list):
