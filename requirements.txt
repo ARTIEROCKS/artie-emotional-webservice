@@ -20,7 +20,7 @@ h5py==3.1.0
 idna==3.2
 importlib-metadata==7.0.0
 itsdangerous==2.1.2
-Jinja2==3.1.2
+Jinja2==3.1.5
 Keras-Preprocessing==1.1.2
 legacy==0.1.7
 libclang==16.0.6
