@@ -9,7 +9,7 @@ charset-normalizer==2.0.3
 click==8.1.7
 dm-tree==0.1.8
 Flask==3.0.0
-Flask-Cors==4.0.0
+Flask-Cors==4.0.2
 flatbuffers==23.5.26
 gast==0.4.0
 google-auth==1.33.0
