@@ -64,5 +64,5 @@ tzdata==2023.3
 urllib3==1.26.18
 Werkzeug==3.0.3
 wrapt==1.12.1
-zipp==3.17.0
+zipp==3.19.1
 ffmpeg-python==0.2.0
